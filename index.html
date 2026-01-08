@@ -159,7 +159,16 @@
         .record-name { font-weight: bold; color: #333; }
         .record-reason { color: #444; font-size: 0.95rem; line-height: 1.5; }
 
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; justify-content: center; align-items: center; }
+        /* 彈窗樣式 - 確保層級最高 */
+        .modal { 
+            display: none; 
+            position: fixed; 
+            top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.6); 
+            z-index: 9999; /* 加高 z-index */
+            justify-content: center; 
+            align-items: center; 
+        }
         .modal-content { background: white; padding: 30px; width: 85%; max-width: 320px; border-radius: 12px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
         textarea { width: 100%; height: 100px; margin: 15px 0; padding: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 1rem; resize: none; }
         
@@ -221,18 +230,18 @@
 
 <script>
     // ==========================================
-    // 請將這裡換成你剛剛「新增部署」後拿到的 Apps Script 網址
+    // 請將這裡換成你的 Apps Script 網址
     // ==========================================
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzjfsXmPP5SBLeIYIsI9nmcpAwXErIH61g6XVRrl3g699IUNiIr4LJa8Q_Hd9G3ltPKoQ/exec"; 
 
     let currentUser = "";
-    // localStampCount 是「網頁記憶」的點數，它是我們信任的基準，防止伺服器延遲導致的回溯
     let localStampCount = 0; 
     let userIP = "Fetching...";
 
     const grid = document.getElementById('grid');
     const modal = document.getElementById('reasonModal');
 
+    // 初始化格子
     function initGrid() {
         grid.innerHTML = '';
         for(let i=0; i<12; i++) {
@@ -258,6 +267,12 @@
         document.getElementById('displayNickname').innerText = currentUser;
         document.getElementById('loginScreen').style.display = 'none';
         
+        // 【關鍵修正】
+        // 在抓資料之前，先執行一次更新格子
+        // 這樣就算網路卡住，第一格(或目前的 localStampCount)也是可以點的！
+        updateGrid(localStampCount);
+
+        // 然後再慢慢去抓資料
         fetchData();
     }
 
@@ -268,6 +283,8 @@
         if(viewName === 'card') {
             document.getElementById('cardView').style.display = 'flex';
             document.getElementById('listView').style.display = 'none';
+            // 切換回來時，一樣先確保本地狀態有效
+            updateGrid(localStampCount);
             fetchData();
         } else {
             document.getElementById('cardView').style.display = 'none';
@@ -276,9 +293,12 @@
         }
     }
 
+    // 彈窗功能
     function openModal() {
+        console.log("Opening Modal..."); // Debug用
         modal.style.display = 'flex';
-        document.getElementById('reasonText').focus();
+        // 延遲聚焦，避免手機鍵盤跳不出來
+        setTimeout(() => document.getElementById('reasonText').focus(), 100);
     }
 
     function closeModal() {
@@ -293,13 +313,11 @@
         btn.innerText = "蓋章中...";
         btn.disabled = true;
 
-        // 【關鍵修復】
-        // 1. 在送出前，直接讓本地點數 +1，並鎖住畫面
-        // 這樣就算伺服器還沒存好，網頁也不會變回去
+        // 本地先加分 (防消失、即時回饋)
         localStampCount++; 
         updateGrid(localStampCount); 
 
-        // 2. 傳送資料到後端
+        // 傳送資料
         fetch(SCRIPT_URL, {
             method: 'POST',
             body: JSON.stringify({ 
@@ -314,39 +332,40 @@
             btn.innerText = "確認蓋章";
             btn.disabled = false;
             
-            // 這裡我們不再立刻 reload data，因為我們已經在上面手動 +1 了
-            // 只做背景靜默更新，且確保不會讓點數變少
+            // 稍後背景同步
             setTimeout(fetchData, 2000); 
         }).catch(err => {
-            alert("連線不穩，但你的章我們先幫你記在畫面上了！");
+            console.error(err);
+            alert("連線不穩，但你的章我們先記在畫面上了！");
             btn.disabled = false;
         });
     }
 
     function fetchData() {
+        if(SCRIPT_URL.includes("你的AppsScript網址")) {
+            console.warn("尚未設定 Script URL");
+            return;
+        }
+
         fetch(SCRIPT_URL)
         .then(res => res.json())
         .then(data => {
-            // 更新「大家的心聲」列表 (這裡顯示所有人)
             const listDiv = document.getElementById('recordList');
             listDiv.innerHTML = '';
             
-            // 處理「我的集點卡」 (這裡只顯示我自己)
-            // 使用 trim() 確保沒有因為空白而判斷錯誤
+            // 篩選使用者
             const myRecords = data.filter(d => d.nickname.trim() === currentUser.trim());
             const serverCount = myRecords.length;
 
-            // 【關鍵修復：棘輪機制】
-            // 只有當伺服器的點數 > 本地點數時，才更新本地點數
-            // 這樣可以防止伺服器延遲傳回舊資料時，把我們剛蓋的章擦掉
+            // 棘輪機制：只增不減
             if (serverCount > localStampCount) {
                 localStampCount = serverCount;
             }
 
-            // 使用「只增不減」的 localStampCount 來繪圖
+            // 更新畫面
             updateGrid(localStampCount);
 
-            // 渲染列表資料
+            // 更新列表
             data.forEach(item => {
                 let div = document.createElement('div');
                 div.className = 'record-item';
@@ -364,20 +383,29 @@
         .catch(err => console.error("讀取失敗:", err));
     }
 
+    // 更新格子狀態 (核心邏輯)
     function updateGrid(count) {
         document.getElementById('stampCount').innerText = count;
         const slots = document.querySelectorAll('.stamp-slot');
         
         slots.forEach((slot, index) => {
+            // 清除舊的事件監聽器 (避免重複綁定)
+            slot.onclick = null;
+
             if(index < count) {
+                // 已蓋章
                 slot.classList.add('stamped');
-                slot.onclick = null;
             } else {
+                // 未蓋章
                 slot.classList.remove('stamped');
+                
+                // 只有「下一格」可以點
                 if (index === count) {
                     slot.onclick = openModal;
+                    slot.style.cursor = "pointer";
                 } else {
                     slot.onclick = () => alert("請依序集點！");
+                    slot.style.cursor = "not-allowed";
                 }
             }
         });
