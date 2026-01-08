@@ -69,6 +69,17 @@
             font-size: 0.9rem;
             text-align: right;
             color: var(--text-sub);
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logout-link {
+            color: #999;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 0.8rem;
         }
 
         .card-view {
@@ -146,6 +157,13 @@
         }
 
         .list-view { display: none; padding: 20px; width: 100%; box-sizing: border-box;}
+        
+        .loading-state {
+            text-align: center;
+            padding: 30px;
+            color: #888;
+        }
+        
         .record-item { 
             background: white; 
             margin-bottom: 15px; 
@@ -159,16 +177,7 @@
         .record-name { font-weight: bold; color: #333; }
         .record-reason { color: #444; font-size: 0.95rem; line-height: 1.5; }
 
-        /* 彈窗樣式 - 確保層級最高 */
-        .modal { 
-            display: none; 
-            position: fixed; 
-            top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.6); 
-            z-index: 9999; /* 加高 z-index */
-            justify-content: center; 
-            align-items: center; 
-        }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; width: 85%; max-width: 320px; border-radius: 12px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
         textarea { width: 100%; height: 100px; margin: 15px 0; padding: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 1rem; resize: none; }
         
@@ -199,7 +208,8 @@
     </div>
 
     <div class="user-info">
-        User: <span id="displayNickname" style="font-weight:bold; color:var(--primary-red);">...</span>
+        <span>User: <span id="displayNickname" style="font-weight:bold; color:var(--primary-red);">...</span></span>
+        <span class="logout-link" onclick="logout()">(登出)</span>
     </div>
 
     <div id="cardView" class="card-view">
@@ -214,7 +224,10 @@
     </div>
 
     <div id="listView" class="list-view">
-        <div id="recordList">載入中...</div>
+        <div id="recordList" class="loading-state">
+            <div style="font-size: 2rem; margin-bottom: 10px;">⏳</div>
+            <div>載入大家的心聲中...</div>
+        </div>
     </div>
 </div>
 
@@ -230,7 +243,7 @@
 
 <script>
     // ==========================================
-    // 請將這裡換成你的 Apps Script 網址
+    // 你的 Google Apps Script 網址 (已填入)
     // ==========================================
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzjfsXmPP5SBLeIYIsI9nmcpAwXErIH61g6XVRrl3g699IUNiIr4LJa8Q_Hd9G3ltPKoQ/exec"; 
 
@@ -241,7 +254,23 @@
     const grid = document.getElementById('grid');
     const modal = document.getElementById('reasonModal');
 
-    // 初始化格子
+    function init() {
+        initGrid();
+        getIP();
+        
+        // 自動登入檢查
+        const savedName = localStorage.getItem('cl_nickname');
+        if(savedName) {
+            currentUser = savedName;
+            document.getElementById('displayNickname').innerText = currentUser;
+            document.getElementById('loginScreen').style.display = 'none';
+            // 先顯示本地記憶的狀態
+            updateGrid(localStampCount);
+            // 抓取最新資料
+            fetchData();
+        }
+    }
+
     function initGrid() {
         grid.innerHTML = '';
         for(let i=0; i<12; i++) {
@@ -251,29 +280,33 @@
             grid.appendChild(slot);
         }
     }
-    initGrid();
 
-    // 抓取 IP
-    fetch('https://api.ipify.org?format=json')
-        .then(response => response.json())
-        .then(data => { userIP = data.ip; })
-        .catch(err => { userIP = "Unknown"; });
+    function getIP() {
+        fetch('https://api.ipify.org?format=json')
+            .then(res => res.json())
+            .then(data => { userIP = data.ip; })
+            .catch(() => { userIP = "Unknown"; });
+    }
 
     function login() {
         const input = document.getElementById('nicknameInput').value.trim();
-        if(!input) return alert("請輸入一個響亮的稱號！");
+        if(!input) return alert("請輸入暱稱！");
         
         currentUser = input;
+        localStorage.setItem('cl_nickname', currentUser);
+        
         document.getElementById('displayNickname').innerText = currentUser;
         document.getElementById('loginScreen').style.display = 'none';
         
-        // 【關鍵修正】
-        // 在抓資料之前，先執行一次更新格子
-        // 這樣就算網路卡住，第一格(或目前的 localStampCount)也是可以點的！
         updateGrid(localStampCount);
-
-        // 然後再慢慢去抓資料
         fetchData();
+    }
+
+    function logout() {
+        if(confirm("確定要登出嗎？")) {
+            localStorage.removeItem('cl_nickname');
+            location.reload(); 
+        }
     }
 
     function switchTab(viewName, tabElement) {
@@ -283,9 +316,6 @@
         if(viewName === 'card') {
             document.getElementById('cardView').style.display = 'flex';
             document.getElementById('listView').style.display = 'none';
-            // 切換回來時，一樣先確保本地狀態有效
-            updateGrid(localStampCount);
-            fetchData();
         } else {
             document.getElementById('cardView').style.display = 'none';
             document.getElementById('listView').style.display = 'block';
@@ -293,11 +323,8 @@
         }
     }
 
-    // 彈窗功能
     function openModal() {
-        console.log("Opening Modal..."); // Debug用
         modal.style.display = 'flex';
-        // 延遲聚焦，避免手機鍵盤跳不出來
         setTimeout(() => document.getElementById('reasonText').focus(), 100);
     }
 
@@ -307,17 +334,17 @@
 
     function submitReason() {
         const reason = document.getElementById('reasonText').value;
-        if(!reason) return alert("請寫下原因，宣洩一下！");
+        if(!reason) return alert("請寫下原因！");
 
         const btn = document.getElementById('confirmBtn');
         btn.innerText = "蓋章中...";
         btn.disabled = true;
 
-        // 本地先加分 (防消失、即時回饋)
+        // 本地樂觀更新
         localStampCount++; 
         updateGrid(localStampCount); 
 
-        // 傳送資料
+        // 發送請求
         fetch(SCRIPT_URL, {
             method: 'POST',
             body: JSON.stringify({ 
@@ -331,33 +358,25 @@
             document.getElementById('reasonText').value = '';
             btn.innerText = "確認蓋章";
             btn.disabled = false;
-            
-            // 稍後背景同步
             setTimeout(fetchData, 2000); 
         }).catch(err => {
-            console.error(err);
-            alert("連線不穩，但你的章我們先記在畫面上了！");
+            alert("連線不穩，已暫時記錄在本地！");
             btn.disabled = false;
         });
     }
 
-   function fetchData() {
-        if(SCRIPT_URL.includes("https://script.google.com/macros/s/AKfycbzjfsXmPP5SBLeIYIsI9nmcpAwXErIH61g6XVRrl3g699IUNiIr4LJa8Q_Hd9G3ltPKoQ/exec")) {
-            console.warn("尚未設定 Script URL");
-            return;
-        }
-
-        // 【關鍵修正】加上時間戳記 timestamp，強迫瀏覽器每次都抓新資料
-        // 符號 ? 還是 & 取決於你的 URL 原本有沒有參數，但在 GAS 通常用 ? 即可
+    function fetchData() {
+        const listDiv = document.getElementById('recordList');
+        
+        // 防快取參數
         const antiCacheURL = SCRIPT_URL + "?t=" + new Date().getTime();
 
         fetch(antiCacheURL)
         .then(res => res.json())
         .then(data => {
-            const listDiv = document.getElementById('recordList');
-            listDiv.innerHTML = ''; // 清空舊列表
+            listDiv.innerHTML = ''; 
             
-            // 1. 處理「我的集點卡」 (只算我自己的)
+            // 1. 處理個人點數
             const myRecords = data.filter(d => d.nickname.trim() === currentUser.trim());
             const serverCount = myRecords.length;
 
@@ -366,17 +385,16 @@
             }
             updateGrid(localStampCount);
 
-            // 2. 處理「大家的心聲」 (顯示所有人，不篩選)
+            // 2. 處理大家的心聲
             if (data.length === 0) {
-                listDiv.innerHTML = '<div style="text-align:center; color:#999; padding:20px;">目前還沒有人離職...這公司太棒了？</div>';
+                listDiv.innerHTML = '<div style="text-align:center; color:#999; padding:20px;">目前還沒有人離職...</div>';
             } else {
                 data.forEach(item => {
                     let div = document.createElement('div');
                     div.className = 'record-item';
                     
-                    // 時間顯示優化
                     let dateObj = new Date(item.time);
-                    let dateStr = dateObj.toLocaleDateString() + " " + dateObj.getHours() + ":" + (dateObj.getMinutes()<10?'0':'') + dateObj.getMinutes();
+                    let dateStr = `${dateObj.getMonth()+1}/${dateObj.getDate()} ${dateObj.getHours()}:${(dateObj.getMinutes()<10?'0':'')+dateObj.getMinutes()}`;
 
                     div.innerHTML = `
                         <div class="record-info">
@@ -390,29 +408,26 @@
             }
         })
         .catch(err => {
-            console.error("讀取失敗:", err);
-            // 如果讀不到，可能是權限問題
-            document.getElementById('recordList').innerHTML = '<div style="text-align:center; color:red; padding:20px;">資料讀取失敗，請確認 Apps Script 部署設定為「任何人」。</div>';
+            console.error("Fetch Error:", err);
+            listDiv.innerHTML = `
+                <div style="text-align:center; color:red; padding:20px;">
+                    無法載入資料<br>
+                    <small>請確認 Apps Script 部署權限為「任何人」</small>
+                </div>`;
         });
     }
 
-    // 更新格子狀態 (核心邏輯)
     function updateGrid(count) {
         document.getElementById('stampCount').innerText = count;
         const slots = document.querySelectorAll('.stamp-slot');
         
         slots.forEach((slot, index) => {
-            // 清除舊的事件監聽器 (避免重複綁定)
             slot.onclick = null;
-
             if(index < count) {
-                // 已蓋章
                 slot.classList.add('stamped');
+                slot.style.cursor = "default";
             } else {
-                // 未蓋章
                 slot.classList.remove('stamped');
-                
-                // 只有「下一格」可以點
                 if (index === count) {
                     slot.onclick = openModal;
                     slot.style.cursor = "pointer";
@@ -424,13 +439,12 @@
         });
     }
 
+    init();
+
     window.onclick = function(event) {
-        if (event.target == modal) {
-            closeModal();
-        }
+        if (event.target == modal) closeModal();
     }
 </script>
 
 </body>
 </html>
-
