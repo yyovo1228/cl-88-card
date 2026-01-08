@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CL 離職集點趣</title>
+    <style>
+        :root {
+            --primary-red: #c00000;
+            --bg-black: #1a1a1a;
+            --card-white: #ffffff;
+            --text-dark: #333;
+        }
+
+        body {
+            background-color: var(--bg-black);
+            font-family: 'Helvetica Neue', Arial, 'Heiti TC', sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            color: var(--text-dark);
+        }
+
+        /* 手機版面容器 */
+        .app-container {
+            width: 100%;
+            max-width: 400px;
+            background-color: #000;
+            position: relative;
+            overflow-y: auto;
+            box-shadow: 0 0 20px rgba(192, 0, 0, 0.3);
+        }
+
+        /* 標題區 */
+        header {
+            background-color: var(--primary-red);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 4px solid white;
+        }
+
+        h1 { margin: 0; font-size: 1.5rem; letter-spacing: 2px; }
+        p.subtitle { margin: 5px 0 0; font-size: 0.8rem; opacity: 0.9; }
+
+        /* 使用者資訊 */
+        .user-info {
+            padding: 15px;
+            color: white;
+            text-align: center;
+            border-bottom: 1px solid #333;
+        }
+
+        /* 集點卡本體 */
+        .card-wrapper {
+            padding: 20px;
+        }
+
+        .loyalty-card {
+            background: var(--card-white);
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px solid var(--primary-red);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        .loyalty-card::before {
+            content: "RESIGNATION";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 3rem;
+            color: rgba(0,0,0,0.05);
+            font-weight: bold;
+            pointer-events: none;
+            width: 100%;
+            text-align: center;
+        }
+
+        .stamp-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .stamp-slot {
+            aspect-ratio: 1;
+            border: 2px dashed #ccc;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .stamp-slot:hover {
+            border-color: var(--primary-red);
+            background: #fff0f0;
+        }
+
+        /* 已集點樣式 */
+        .stamp-slot.stamped {
+            border: 2px solid var(--primary-red);
+            background: transparent;
+        }
+
+        .stamp-slot.stamped::after {
+            content: "離";
+            color: var(--primary-red);
+            font-weight: bold;
+            font-size: 1.2rem;
+            border: 2px solid var(--primary-red);
+            border-radius: 50%;
+            width: 80%;
+            height: 80%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: rotate(-15deg);
+        }
+
+        /* 按鈕 */
+        .btn-action {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: transparent;
+            border: 1px solid var(--primary-red);
+            color: var(--primary-red);
+            margin-top: 20px;
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .btn-action:hover {
+            background: var(--primary-red);
+            color: white;
+        }
+
+        /* 彈窗樣式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 25px;
+            width: 80%;
+            max-width: 300px;
+            border-radius: 10px;
+            border-top: 5px solid var(--primary-red);
+            text-align: center;
+        }
+
+        textarea {
+            width: 90%;
+            height: 80px;
+            margin: 10px 0;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .modal-btn {
+            background: var(--primary-red);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* 切換分頁 */
+        .tabs {
+            display: flex;
+            background: #222;
+        }
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+        .tab.active {
+            color: var(--primary-red);
+            border-bottom: 2px solid var(--primary-red);
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header>
+        <h1>CL 離職集點趣</h1>
+        <p class="subtitle">忍一時風平浪靜，忍兩時集點換現金(並沒有)</p>
+    </header>
+
+    <div class="tabs">
+        <div class="tab active">我的集點</div>
+        <div class="tab">怨念排行榜</div>
+    </div>
+
+    <div class="user-info">
+        目前登入：<span style="color:var(--primary-red); font-weight:bold;">加班的愛麗絲</span>
+    </div>
+
+    <div class="card-wrapper">
+        <div class="loyalty-card">
+            <div style="text-align:center; margin-bottom:15px; font-weight:bold; color:var(--primary-red);">
+                累積 10 點即可獲得「勇氣」一份
+            </div>
+            
+            <div class="stamp-grid" id="grid">
+                </div>
+        </div>
+
+        <button class="btn-action" onclick="alert('功能開發中：這裡可以看到別人的集點卡！')">查看同事的集點卡</button>
+    </div>
+</div>
+
+<div class="modal" id="reasonModal">
+    <div class="modal-content">
+        <h3 style="color:var(--primary-red)">萌生退意...</h3>
+        <p>這次是因為什麼事呢？</p>
+        <textarea placeholder="Ex: 老闆又在下班前五分鐘改需求..."></textarea>
+        <button class="modal-btn" onclick="confirmStamp()">蓋下確認章</button>
+    </div>
+</div>
+
+<script>
+    const grid = document.getElementById('grid');
+    const modal = document.getElementById('reasonModal');
+    let currentSlot = null;
+
+    // 產生 12 個格子
+    for(let i=0; i<12; i++) {
+        let slot = document.createElement('div');
+        slot.className = 'stamp-slot';
+        slot.dataset.index = i;
+        
+        // 模擬前三個已經蓋章
+        if(i < 3) {
+            slot.classList.add('stamped');
+            slot.onclick = () => alert('紀錄：\n主管說這功能很簡單，先做出來看看');
+        } else {
+            slot.onclick = () => openModal(slot);
+        }
+        
+        grid.appendChild(slot);
+    }
+
+    function openModal(slot) {
+        if(slot.classList.contains('stamped')) return;
+        currentSlot = slot;
+        modal.style.display = 'flex';
+    }
+
+    function confirmStamp() {
+        if(currentSlot) {
+            currentSlot.classList.add('stamped');
+            // 更新點擊事件為查看紀錄
+            const note = document.querySelector('textarea').value;
+            currentSlot.onclick = () => alert('紀錄：\n' + (note || '無言的抗議'));
+        }
+        document.querySelector('textarea').value = '';
+        modal.style.display = 'none';
+    }
+
+    // 點擊彈窗外關閉
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>
+
+</body>
+</html>
