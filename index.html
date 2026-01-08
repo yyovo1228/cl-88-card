@@ -118,7 +118,6 @@
             font-family: 'Fredoka', sans-serif;
         }
 
-        /* 下一個可點擊 */
         .stamp-slot.next-up {
             border-color: var(--primary-red);
             background: #fdfefe;
@@ -138,7 +137,6 @@
             100% { transform: scale(1); }
         }
 
-        /* 已蓋章 - 憤怒的離字章 */
         .stamp-slot.stamped {
             border: 2px solid var(--primary-red);
             background: #fdedec;
@@ -180,11 +178,19 @@
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(2px); z-index: 9999; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; width: 85%; max-width: 340px; border-radius: 20px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
 
+        /* 修正 Textarea 樣式：加入 box-sizing: border-box 防止爆框 */
         textarea { 
-            width: 100%; height: 100px; margin: 20px 0; padding: 15px; 
-            border: 2px solid #ecf0f1; border-radius: 10px; 
-            font-size: 1rem; font-family: 'Noto Sans TC', sans-serif;
-            background: #fdfefe; resize: none;
+            width: 100%; 
+            height: 100px; 
+            margin: 20px 0; 
+            padding: 15px; 
+            box-sizing: border-box; /* 關鍵修正 */
+            border: 2px solid #ecf0f1; 
+            border-radius: 10px; 
+            font-size: 1rem; 
+            font-family: 'Noto Sans TC', sans-serif;
+            background: #fdfefe; 
+            resize: none;
             transform: none !important;
         }
         textarea:focus { outline: none; border-color: var(--primary-red); background: white;}
@@ -251,10 +257,7 @@
     <div class="modal-content">
         <div style="font-size: 3rem; margin-bottom: 15px;">🫂</div>
         <h2 style="color:var(--text-dark); margin:0 0 10px 0;">辛苦了...</h2>
-        
-        <p id="quoteText" style="color:#7f8c8d; line-height: 1.6; font-weight:bold; margin: 20px 0;">
-            </p>
-        
+        <p id="quoteText" style="color:#7f8c8d; line-height: 1.6; font-weight:bold; margin: 20px 0;"></p>
         <button id="welcomeBtn" class="btn" onclick="closeWelcome()">我準備好了 🤧</button>
     </div>
 </div>
@@ -332,11 +335,9 @@
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('displayNickname').innerText = currentUser;
         
-        // 1. 隨機挑選金句
         const randomQuote = snarkyQuotes[Math.floor(Math.random() * snarkyQuotes.length)];
         quoteText.innerText = randomQuote;
 
-        // 2. 重置按鈕
         welcomeBtn.innerText = "我準備好了 🤧";
         welcomeBtn.disabled = false;
         
@@ -384,7 +385,6 @@
         btn.disabled = true;
         btn.innerText = "傳送中...";
 
-        // 樂觀更新
         localStampCount++;
         updateGrid(localStampCount);
 
