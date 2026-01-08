@@ -5,286 +5,197 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CL 離職集點趣</title>
     <style>
-        :root {
-            --primary-red: #c00000;
-            --bg-black: #1a1a1a;
-            --card-white: #ffffff;
-            --text-dark: #333;
-        }
-
-        body {
-            background-color: var(--bg-black);
-            font-family: 'Helvetica Neue', Arial, 'Heiti TC', sans-serif;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-            color: var(--text-dark);
-        }
-
-        /* 手機版面容器 */
-        .app-container {
-            width: 100%;
-            max-width: 400px;
-            background-color: #000;
-            position: relative;
-            overflow-y: auto;
-            box-shadow: 0 0 20px rgba(192, 0, 0, 0.3);
-        }
-
-        /* 標題區 */
-        header {
-            background-color: var(--primary-red);
-            color: white;
-            padding: 20px;
-            text-align: center;
-            border-bottom: 4px solid white;
-        }
-
-        h1 { margin: 0; font-size: 1.5rem; letter-spacing: 2px; }
-        p.subtitle { margin: 5px 0 0; font-size: 0.8rem; opacity: 0.9; }
-
-        /* 使用者資訊 */
-        .user-info {
-            padding: 15px;
-            color: white;
-            text-align: center;
-            border-bottom: 1px solid #333;
-        }
-
-        /* 集點卡本體 */
-        .card-wrapper {
-            padding: 20px;
-        }
-
-        .loyalty-card {
-            background: var(--card-white);
-            border-radius: 10px;
-            padding: 20px;
-            border: 2px solid var(--primary-red);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            position: relative;
-        }
-
-        .loyalty-card::before {
-            content: "RESIGNATION";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-30deg);
-            font-size: 3rem;
-            color: rgba(0,0,0,0.05);
-            font-weight: bold;
-            pointer-events: none;
-            width: 100%;
-            text-align: center;
-        }
-
-        .stamp-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-        }
-
-        .stamp-slot {
-            aspect-ratio: 1;
-            border: 2px dashed #ccc;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
-        }
-
-        .stamp-slot:hover {
-            border-color: var(--primary-red);
-            background: #fff0f0;
-        }
-
-        /* 已集點樣式 */
-        .stamp-slot.stamped {
-            border: 2px solid var(--primary-red);
-            background: transparent;
-        }
-
-        .stamp-slot.stamped::after {
-            content: "離";
-            color: var(--primary-red);
-            font-weight: bold;
-            font-size: 1.2rem;
-            border: 2px solid var(--primary-red);
-            border-radius: 50%;
-            width: 80%;
-            height: 80%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transform: rotate(-15deg);
-        }
-
-        /* 按鈕 */
-        .btn-action {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            background: transparent;
-            border: 1px solid var(--primary-red);
-            color: var(--primary-red);
-            margin-top: 20px;
-            text-align: center;
-            text-decoration: none;
-            font-weight: bold;
-            border-radius: 5px;
-            transition: 0.3s;
-        }
-
-        .btn-action:hover {
-            background: var(--primary-red);
-            color: white;
-        }
-
-        /* 彈窗樣式 */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 100;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background: white;
-            padding: 25px;
-            width: 80%;
-            max-width: 300px;
-            border-radius: 10px;
-            border-top: 5px solid var(--primary-red);
-            text-align: center;
-        }
-
-        textarea {
-            width: 90%;
-            height: 80px;
-            margin: 10px 0;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        .modal-btn {
-            background: var(--primary-red);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        /* 切換分頁 */
-        .tabs {
-            display: flex;
-            background: #222;
-        }
-        .tab {
-            flex: 1;
-            padding: 15px;
-            text-align: center;
-            color: #666;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-        }
-        .tab.active {
-            color: var(--primary-red);
-            border-bottom: 2px solid var(--primary-red);
-            font-weight: bold;
-        }
-
+        /* CSS 樣式保持原樣，為了版面整潔這裡省略重複的 CSS，
+           請保留原本的 CSS 或直接使用上一版的 style 區塊 */
+        :root { --primary-red: #c00000; --bg-black: #1a1a1a; --card-white: #ffffff; --text-dark: #333; }
+        body { background-color: var(--bg-black); font-family: sans-serif; margin: 0; display: flex; justify-content: center; min-height: 100vh; color: var(--text-dark); }
+        .app-container { width: 100%; max-width: 400px; background-color: #000; position: relative; min-height: 100vh; box-shadow: 0 0 20px rgba(192, 0, 0, 0.3); }
+        header { background-color: var(--primary-red); color: white; padding: 20px; text-align: center; border-bottom: 4px solid white; }
+        .user-info { padding: 15px; color: white; text-align: center; border-bottom: 1px solid #333; background: #222;}
+        .card-wrapper { padding: 20px; }
+        .loyalty-card { background: var(--card-white); border-radius: 10px; padding: 20px; border: 2px solid var(--primary-red); min-height: 300px; }
+        .stamp-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: 20px; }
+        .stamp-slot { aspect-ratio: 1; border: 2px dashed #ccc; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; }
+        .stamp-slot.stamped { border: 2px solid var(--primary-red); }
+        .stamp-slot.stamped::after { content: "離"; color: var(--primary-red); font-weight: bold; font-size: 1.2rem; border: 2px solid var(--primary-red); border-radius: 50%; width: 80%; height: 80%; display: flex; align-items: center; justify-content: center; transform: rotate(-15deg); }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 100; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 25px; width: 80%; max-width: 300px; border-radius: 10px; text-align: center; }
+        textarea { width: 90%; height: 80px; margin: 10px 0; padding: 8px; }
+        .modal-btn { background: var(--primary-red); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+        .tabs { display: flex; background: #222; }
+        .tab { flex: 1; padding: 15px; text-align: center; color: #666; cursor: pointer; }
+        .tab.active { color: var(--primary-red); border-bottom: 2px solid var(--primary-red); font-weight: bold; }
+        
+        /* 列表樣式 */
+        .list-view { display: none; padding: 20px; color: white; }
+        .record-item { background: #333; margin-bottom: 10px; padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary-red); }
+        .record-name { font-weight: bold; color: #fff; margin-bottom: 5px; }
+        .record-reason { color: #ccc; font-size: 0.9rem; }
+        .login-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 200; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; }
+        input[type="text"] { padding: 10px; margin: 10px; border-radius: 5px; border: none; }
+        .loading { color: var(--primary-red); font-weight: bold; display: none;}
     </style>
 </head>
 <body>
 
 <div class="app-container">
+    <div id="loginScreen" class="login-screen">
+        <h1 style="color: var(--primary-red);">CL 離職集點趣</h1>
+        <p>請輸入你的代號/暱稱</p>
+        <input type="text" id="nicknameInput" placeholder="Ex: 內湖李奧納多">
+        <button class="modal-btn" onclick="login()">進入修羅場</button>
+    </div>
+
     <header>
         <h1>CL 離職集點趣</h1>
-        <p class="subtitle">忍一時風平浪靜，忍兩時集點換現金(並沒有)</p>
     </header>
 
     <div class="tabs">
-        <div class="tab active">我的集點</div>
-        <div class="tab">怨念排行榜</div>
+        <div class="tab active" onclick="switchTab('card')">我的集點</div>
+        <div class="tab" onclick="switchTab('list')">大家的心聲</div>
     </div>
 
     <div class="user-info">
-        目前登入：<span style="color:var(--primary-red); font-weight:bold;">加班的愛麗絲</span>
+        Hi, <span id="displayNickname" style="color:var(--primary-red); font-weight:bold;">...</span>
     </div>
 
-    <div class="card-wrapper">
+    <div id="cardView" class="card-wrapper">
         <div class="loyalty-card">
             <div style="text-align:center; margin-bottom:15px; font-weight:bold; color:var(--primary-red);">
-                累積 10 點即可獲得「勇氣」一份
+                目前累積：<span id="stampCount">0</span> 點
             </div>
-            
-            <div class="stamp-grid" id="grid">
-                </div>
+            <div class="stamp-grid" id="grid"></div>
         </div>
+        <div id="loadingMsg" class="loading" style="text-align:center; margin-top:10px;">資料同步中...</div>
+    </div>
 
-        <button class="btn-action" onclick="alert('功能開發中：這裡可以看到別人的集點卡！')">查看同事的集點卡</button>
+    <div id="listView" class="list-view">
+        <div id="recordList">載入中...</div>
     </div>
 </div>
 
 <div class="modal" id="reasonModal">
     <div class="modal-content">
         <h3 style="color:var(--primary-red)">萌生退意...</h3>
-        <p>這次是因為什麼事呢？</p>
-        <textarea placeholder="Ex: 老闆又在下班前五分鐘改需求..."></textarea>
-        <button class="modal-btn" onclick="confirmStamp()">蓋下確認章</button>
+        <textarea id="reasonText" placeholder="為什麼想離職？(這個理由會被匿名記錄)"></textarea>
+        <button class="modal-btn" onclick="submitReason()">蓋下確認章</button>
     </div>
 </div>
 
 <script>
+    // ==========================================
+    // 請將下方的網址換成你剛剛部署拿到的 URL
+    // ==========================================
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwIYdgz3RD8LTzqGkpt8-VJt92ccc9nWtD5ACnuNjLw5vzBR38aGH_z_UtXN8rudG5J8g/exec";
+
+    let currentUser = "";
     const grid = document.getElementById('grid');
     const modal = document.getElementById('reasonModal');
-    let currentSlot = null;
-
-    // 產生 12 個格子
+    
+    // 初始化 12 格
     for(let i=0; i<12; i++) {
         let slot = document.createElement('div');
         slot.className = 'stamp-slot';
-        slot.dataset.index = i;
-        
-        // 模擬前三個已經蓋章
-        if(i < 3) {
-            slot.classList.add('stamped');
-            slot.onclick = () => alert('紀錄：\n主管說這功能很簡單，先做出來看看');
-        } else {
-            slot.onclick = () => openModal(slot);
-        }
-        
+        slot.onclick = () => openModal();
         grid.appendChild(slot);
     }
 
-    function openModal(slot) {
-        if(slot.classList.contains('stamped')) return;
-        currentSlot = slot;
+    function login() {
+        const input = document.getElementById('nicknameInput').value;
+        if(!input) return alert("請輸入暱稱");
+        currentUser = input;
+        document.getElementById('displayNickname').innerText = currentUser;
+        document.getElementById('loginScreen').style.display = 'none';
+        
+        // 登入後立刻抓取資料
+        fetchData();
+    }
+
+    function openModal() {
         modal.style.display = 'flex';
     }
 
-    function confirmStamp() {
-        if(currentSlot) {
-            currentSlot.classList.add('stamped');
-            // 更新點擊事件為查看紀錄
-            const note = document.querySelector('textarea').value;
-            currentSlot.onclick = () => alert('紀錄：\n' + (note || '無言的抗議'));
+    function switchTab(tab) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        if(tab === 'card') {
+            document.getElementById('cardView').style.display = 'block';
+            document.getElementById('listView').style.display = 'none';
+        } else {
+            document.getElementById('cardView').style.display = 'none';
+            document.getElementById('listView').style.display = 'block';
+            fetchData(); // 切換到列表時更新資料
         }
-        document.querySelector('textarea').value = '';
-        modal.style.display = 'none';
     }
 
-    // 點擊彈窗外關閉
+    // 提交資料到 Google Sheet
+    function submitReason() {
+        const reason = document.getElementById('reasonText').value;
+        if(!reason) return alert("請寫下理由，宣洩一下！");
+
+        const btn = document.querySelector('.modal-btn');
+        btn.innerText = "傳送中...";
+        btn.disabled = true;
+
+        // 傳送 POST 請求
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({ nickname: currentUser, reason: reason }),
+            mode: 'no-cors' // 這是關鍵，避免跨域錯誤
+        }).then(() => {
+            alert("集點成功！離自由又近了一步。");
+            modal.style.display = 'none';
+            document.getElementById('reasonText').value = '';
+            btn.innerText = "蓋下確認章";
+            btn.disabled = false;
+            fetchData(); // 重新抓取資料更新畫面
+        }).catch(err => {
+            alert("系統錯誤：" + err);
+            btn.disabled = false;
+        });
+    }
+
+    // 從 Google Sheet 讀取資料
+    function fetchData() {
+        document.getElementById('loadingMsg').style.display = 'block';
+        
+        fetch(SCRIPT_URL)
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('loadingMsg').style.display = 'none';
+            
+            // 1. 更新列表視圖
+            const listDiv = document.getElementById('recordList');
+            listDiv.innerHTML = '';
+            data.forEach(item => {
+                let div = document.createElement('div');
+                div.className = 'record-item';
+                // 時間格式化簡單處理
+                let date = new Date(item.time).toLocaleDateString();
+                div.innerHTML = `<div class="record-name">${item.nickname} <span style="font-size:0.8rem; font-weight:normal; float:right;">${date}</span></div><div class="record-reason">${item.reason}</div>`;
+                listDiv.appendChild(div);
+            });
+
+            // 2. 更新我的集點卡 (計算我有幾筆資料)
+            const myCount = data.filter(d => d.nickname === currentUser).length;
+            document.getElementById('stampCount').innerText = myCount;
+            
+            // 更新格子狀態
+            const slots = document.querySelectorAll('.stamp-slot');
+            slots.forEach((slot, index) => {
+                if(index < myCount) {
+                    slot.classList.add('stamped');
+                    slot.onclick = null; // 已經蓋過的不能再點
+                } else {
+                    slot.classList.remove('stamped');
+                    slot.onclick = () => openModal();
+                }
+            });
+        });
+    }
+
+    // 點擊視窗外關閉
     window.onclick = function(event) {
         if (event.target == modal) {
             modal.style.display = "none";
