@@ -118,6 +118,7 @@
             font-family: 'Fredoka', sans-serif;
         }
 
+        /* 下一個可點擊 */
         .stamp-slot.next-up {
             border-color: var(--primary-red);
             background: #fdfefe;
@@ -137,6 +138,7 @@
             100% { transform: scale(1); }
         }
 
+        /* 已蓋章 - 憤怒的離字章 */
         .stamp-slot.stamped {
             border: 2px solid var(--primary-red);
             background: #fdedec;
@@ -178,13 +180,12 @@
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(2px); z-index: 9999; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; width: 85%; max-width: 340px; border-radius: 20px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
 
-        /* 修正 Textarea 樣式，確保不歪斜，字體正常 */
         textarea { 
             width: 100%; height: 100px; margin: 20px 0; padding: 15px; 
             border: 2px solid #ecf0f1; border-radius: 10px; 
-            font-size: 1rem; font-family: 'Noto Sans TC', sans-serif; /* 強制字體 */
+            font-size: 1rem; font-family: 'Noto Sans TC', sans-serif;
             background: #fdfefe; resize: none;
-            transform: none !important; /* 強制不歪斜 */
+            transform: none !important;
         }
         textarea:focus { outline: none; border-color: var(--primary-red); background: white;}
         
@@ -249,12 +250,11 @@
 <div class="modal" id="welcomeModal">
     <div class="modal-content">
         <div style="font-size: 3rem; margin-bottom: 15px;">🫂</div>
-        <h2 style="color:var(--text-dark); margin:0 0 10px 0;">拒絕內耗</h2>
-        <p style="color:#7f8c8d; line-height: 1.6;">
-            別把委屈往心裡吞，<br>
-            適時的釋放是為了走更長遠的路。<br>
-            把負能量留在這裡，輕裝前行。<br>
-        </p>
+        <h2 style="color:var(--text-dark); margin:0 0 10px 0;">辛苦了...</h2>
+        
+        <p id="quoteText" style="color:#7f8c8d; line-height: 1.6; font-weight:bold; margin: 20px 0;">
+            </p>
+        
         <button id="welcomeBtn" class="btn" onclick="closeWelcome()">我準備好了 🤧</button>
     </div>
 </div>
@@ -278,6 +278,18 @@
     const welcomeModal = document.getElementById('welcomeModal');
     const welcomeBtn = document.getElementById('welcomeBtn');
     const reasonModal = document.getElementById('reasonModal');
+    const quoteText = document.getElementById('quoteText');
+
+    // 發瘋金句庫
+    const snarkyQuotes = [
+        "不要隨便展現你的修養，對方可能配不上。",
+        "吾日三省吾身：吾沒錯，是他們有病，這工作沒法做。",
+        "如果我有得罪的地方，那是他罪有應得。",
+        "忍一時越想越氣，退一步乳腺增生。發瘋吧，身體健康最重要。",
+        "只要我沒有素質，就沒有人能用素質綁架我。",
+        "與其檢討自己，不如責怪他人。",
+        "既然解決不了問題，那就解決提出問題的人"
+    ];
 
     function initGrid() {
         grid.innerHTML = '';
@@ -320,20 +332,22 @@
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('displayNickname').innerText = currentUser;
         
-        // 重置按鈕狀態
+        // 1. 隨機挑選金句
+        const randomQuote = snarkyQuotes[Math.floor(Math.random() * snarkyQuotes.length)];
+        quoteText.innerText = randomQuote;
+
+        // 2. 重置按鈕
         welcomeBtn.innerText = "我準備好了 🤧";
         welcomeBtn.disabled = false;
         
         welcomeModal.style.display = 'flex';
     }
 
-    // 優化：點擊後先讀取資料，讀完才關閉視窗 (避免畫面跳動)
     function closeWelcome() {
         welcomeBtn.innerText = "讀取資料庫中...";
         welcomeBtn.disabled = true;
 
         fetchData().then(() => {
-            // 資料讀完，延遲一下讓使用者看到狀態
             setTimeout(() => {
                 welcomeModal.style.display = 'none';
             }, 500);
@@ -390,7 +404,6 @@
         });
     }
 
-    // 修改 fetchData 為 Promise，讓 Loading 功能可以等待它
     function fetchData() {
         return new Promise((resolve) => {
             const url = SCRIPT_URL + "?t=" + new Date().getTime();
@@ -398,7 +411,6 @@
             fetch(url)
             .then(res => res.json())
             .then(data => {
-                // 更新心聲牆
                 const listDiv = document.getElementById('recordList');
                 listDiv.innerHTML = '';
                 if(data.length === 0) listDiv.innerHTML = '<div style="text-align:center; color:#bdc3c7;">目前還沒有人離職...不可思議</div>';
@@ -418,22 +430,20 @@
                     listDiv.appendChild(div);
                 });
 
-                // 更新集點卡
                 const myNameClean = String(currentUser).trim();
                 const myRecords = data.filter(d => String(d.nickname).trim() === myNameClean);
                 const serverCount = myRecords.length;
 
-                // 邏輯：永遠信任伺服器的最新數據，除非伺服器是0(可能是剛載入)且本地>0
                 if (serverCount > 0 || localStampCount === 0) {
                     localStampCount = serverCount;
                 }
                 
                 updateGrid(localStampCount);
-                resolve(); // 完成
+                resolve(); 
             })
             .catch(err => {
                 console.error(err);
-                resolve(); // 就算失敗也要 resolve 讓視窗關閉
+                resolve();
             });
         });
     }
