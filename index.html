@@ -7,395 +7,265 @@
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-red: #d93025; /* 稍微亮一點的紅，比較有活力 */
-            --primary-light: #ffeceb;
-            --text-main: #4a4a4a;
-            --text-sub: #888;
-            --card-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            --primary-red: #ff4d4f;
+            --primary-bg: #fff1f0;
+            --text-dark: #2c3e50;
+            --bg-dots: #f0f2f5;
         }
 
         body {
-            /* 輕鬆的圓點背景 */
-            background-color: #f8f9fa;
-            background-image: radial-gradient(#e0e0e0 2px, transparent 2px);
-            background-size: 20px 20px;
+            background-color: var(--bg-dots);
+            background-image: radial-gradient(#d9d9d9 1.5px, transparent 1.5px);
+            background-size: 15px 15px;
             font-family: 'Noto Sans TC', sans-serif;
             margin: 0;
             display: flex;
             justify-content: center;
             min-height: 100vh;
-            color: var(--text-main);
+            color: var(--text-dark);
+            padding-bottom: 50px; /* 給除錯區留空間 */
         }
 
         .app-container {
             width: 100%;
-            max-width: 420px;
-            background-color: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            position: relative;
+            max-width: 450px; /* 稍微寬一點放30格 */
+            background: rgba(255,255,255,0.96);
             min-height: 100vh;
-            box-shadow: var(--card-shadow);
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
             display: flex;
             flex-direction: column;
         }
 
         header {
             background: white;
-            padding: 25px 20px;
-            text-align: center;
-            border-bottom-left-radius: 20px;
-            border-bottom-right-radius: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            z-index: 10;
-        }
-
-        h1 { 
-            margin: 0; 
-            font-family: 'Fredoka', sans-serif;
-            font-size: 1.6rem; 
-            color: var(--primary-red); 
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        /* 切換頁籤 - 像藥丸一樣的造型 */
-        .tabs {
-            display: flex;
-            padding: 15px 20px;
-            gap: 10px;
-            justify-content: center;
-        }
-        .tab {
-            flex: 1;
-            padding: 10px;
-            text-align: center;
-            color: var(--text-sub);
-            cursor: pointer;
-            border-radius: 50px;
-            background: #eee;
-            transition: 0.3s;
-            font-weight: bold;
-            font-size: 0.9rem;
-        }
-        .tab.active {
-            background: var(--primary-red);
-            color: white;
-            box-shadow: 0 4px 10px rgba(217, 48, 37, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .user-info {
-            padding: 5px 25px;
-            font-size: 0.85rem;
-            text-align: right;
-            color: var(--text-sub);
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 8px;
-        }
-        .logout-link {
-            color: var(--primary-red);
-            text-decoration: none;
-            cursor: pointer;
-            border: 1px solid var(--primary-red);
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 0.75rem;
-        }
-
-        /* 卡片區域 */
-        .card-view {
             padding: 20px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            text-align: center;
+            border-bottom: 3px solid var(--primary-red);
+            z-index: 2;
         }
+
+        h1 { margin: 0; font-family: 'Fredoka', sans-serif; color: var(--primary-red); }
+
+        .tabs { display: flex; padding: 10px; gap: 10px; background: #fff; border-bottom: 1px solid #eee; }
+        .tab { flex: 1; padding: 12px; text-align: center; border-radius: 8px; background: #f5f5f5; cursor: pointer; font-weight: bold; color: #888; transition: 0.2s; }
+        .tab.active { background: var(--primary-red); color: white; }
+
+        .user-info { padding: 10px 20px; text-align: right; font-size: 0.85rem; color: #666; background: #fafafa; display: flex; justify-content: space-between; align-items: center;}
+        
+        .card-view { padding: 15px; flex: 1; display: flex; flex-direction: column; }
 
         .loyalty-card {
-            width: 100%;
             background: white;
-            border-radius: 20px;
-            padding: 25px 20px;
-            border: 2px dashed #ffccc7; /* 可愛的虛線邊框 */
-            box-shadow: var(--card-shadow);
-            position: relative;
-            margin-bottom: 20px;
-            box-sizing: border-box;
-            transition: 0.3s;
-        }
-        
-        .loyalty-card:hover {
-            transform: translateY(-5px);
+            border-radius: 15px;
+            padding: 20px 15px;
+            border: 2px dashed #ffccc7;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         }
 
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px dashed #f0f0f0;
-        }
-        .points-display {
-            font-family: 'Fredoka', sans-serif;
-            font-size: 2.2rem;
-            color: var(--primary-red);
-        }
+        .points-header { text-align: center; margin-bottom: 20px; }
+        .points-number { font-size: 2.5rem; font-family: 'Fredoka', sans-serif; color: var(--primary-red); font-weight: bold; }
 
+        /* 30格佈局：改成 5欄 */
         .stamp-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
+            grid-template-columns: repeat(5, 1fr); /* 5欄 */
+            gap: 10px;
         }
 
         .stamp-slot {
             aspect-ratio: 1;
-            background: #fafafa;
             border-radius: 50%;
+            background: #fff;
+            border: 2px dashed #ddd;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
+            font-size: 0.8rem;
+            color: #ccc;
             position: relative;
+            cursor: pointer;
             transition: 0.2s;
-            border: 2px solid transparent;
-            font-size: 1.5rem; /* Emoji 大小 */
-            color: #ddd;
-        }
-        
-        /* 未蓋章的格子樣式 */
-        .stamp-slot:not(.stamped) {
-            border: 2px dashed #e0e0e0;
-        }
-        .stamp-slot:not(.stamped)::before {
-            content: "⚪";
-            opacity: 0.3;
-            filter: grayscale(1);
         }
 
-        /* 下一個可以蓋的格子 */
+        /* 數字標示 */
+        .stamp-slot span { font-size: 0.7rem; font-family: 'Fredoka'; opacity: 0.5; }
+
+        /* 下一個可點擊 */
         .stamp-slot.next-up {
             border-color: var(--primary-red);
-            background: var(--primary-light);
-            animation: pulse 2s infinite;
+            background: var(--primary-bg);
+            animation: pulse 1.5s infinite;
+            cursor: pointer;
         }
-        .stamp-slot.next-up::before {
-            content: "👇";
-            opacity: 1;
-            filter: none;
-        }
+        .stamp-slot.next-up span { display: none; }
+        .stamp-slot.next-up::after { content: "➕"; font-size: 1.2rem; }
 
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(217, 48, 37, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(217, 48, 37, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(217, 48, 37, 0); }
-        }
-
-        /* 已蓋章樣式 */
+        /* 已蓋章 */
         .stamp-slot.stamped {
-            background: #fff0f0;
             border: 2px solid var(--primary-red);
+            background: #fff5f5;
+            color: transparent;
         }
-        .stamp-slot.stamped::after {
-            content: "🉐"; /* 改用 Emoji 章 */
+        .stamp-slot.stamped span { display: none; }
+        .stamp-slot.stamped::before {
+            content: "離"; /* 這裡可以改成 Emoji 如 💢 */
+            color: var(--primary-red);
+            font-weight: bold;
+            font-size: 1.2rem;
             position: absolute;
-            font-size: 1.6rem;
-            animation: stampIn 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            transform: rotate(-15deg);
         }
 
-        @keyframes stampIn {
-            0% { transform: scale(3) rotate(10deg); opacity: 0; }
-            80% { transform: scale(0.9) rotate(-10deg); opacity: 1; }
-            100% { transform: scale(1) rotate(0deg); }
-        }
+        @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.8; } }
 
-        /* 列表樣式 */
-        .list-view { display: none; padding: 20px; width: 100%; box-sizing: border-box;}
+        /* 列表 */
+        .list-view { display: none; padding: 20px; }
+        .record-item { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid var(--primary-red); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+
+        /* 彈窗 */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 25px; width: 85%; max-width: 320px; border-radius: 15px; text-align: center; }
+        textarea { width: 100%; height: 80px; margin: 15px 0; padding: 10px; border: 2px solid #eee; border-radius: 8px; font-size: 1rem; }
         
-        .record-item { 
-            background: white; 
-            margin-bottom: 15px; 
-            padding: 18px; 
-            border-radius: 15px; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-            border-left: 5px solid var(--primary-red);
-            transition: 0.2s;
-        }
-        .record-item:hover { transform: translateX(3px); }
+        .btn { background: var(--primary-red); color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer; }
         
-        .record-info { display: flex; justify-content: space-between; margin-bottom: 10px; color: #999; font-size: 0.8rem;}
-        .record-name { font-weight: bold; color: #333; font-size: 1rem; display: flex; align-items: center; gap: 5px;}
-        .record-reason { color: #555; font-size: 0.95rem; line-height: 1.6; }
-
-        /* 彈窗優化 */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(3px); z-index: 9999; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 30px; width: 85%; max-width: 320px; border-radius: 20px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
-        
-        textarea { 
-            width: 100%; height: 100px; margin: 15px 0; padding: 15px; 
-            border: 2px solid #eee; border-radius: 12px; box-sizing: border-box; 
-            font-size: 1rem; resize: none; font-family: inherit;
-            background: #fafafa;
+        /* 除錯區 */
+        #debugArea {
+            padding: 10px; background: #333; color: #0f0; font-family: monospace; font-size: 0.7rem;
+            word-break: break-all; margin-top: 20px; border-radius: 5px; display: none;
         }
-        textarea:focus { outline: none; border-color: var(--primary-red); background: white; }
-        
-        .btn { 
-            background: var(--primary-red); color: white; border: none; padding: 14px 0; width: 100%; 
-            border-radius: 12px; font-size: 1rem; cursor: pointer; font-weight: bold; 
-            transition: 0.2s; box-shadow: 0 4px 12px rgba(217, 48, 37, 0.3);
-        }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(217, 48, 37, 0.4); }
-        .btn:disabled { background: #ccc; box-shadow: none; transform: none; cursor: not-allowed; }
 
-        /* 登入頁面 */
-        #loginScreen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 200; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; box-sizing: border-box; background-image: radial-gradient(#e0e0e0 2px, transparent 2px); background-size: 20px 20px; }
-        input[type="text"] { width: 100%; padding: 15px; margin: 20px 0; border: 2px solid #ddd; border-radius: 12px; font-size: 1.1rem; box-sizing: border-box; text-align: center; font-family: inherit;}
-        input[type="text"]:focus { outline: none; border-color: var(--primary-red); }
-
-        /* 錯誤訊息 */
-        .error-box { background: #ffeceb; color: var(--primary-red); padding: 15px; border-radius: 10px; margin-top: 20px; font-size: 0.9rem; border: 1px solid #ffccc7; display: none;}
+        #loginScreen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 200; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; box-sizing: border-box; }
+        input[type="text"] { width: 100%; padding: 15px; margin: 20px 0; border: 2px solid #ddd; border-radius: 12px; font-size: 1.1rem; text-align: center; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
     <div id="loginScreen">
-        <div style="font-size: 3rem; margin-bottom: 10px;">🏃💨</div>
-        <h1 style="font-size: 2rem; margin-bottom: 10px;">CL 離職集點趣</h1>
-        <p style="color:#666; margin-bottom: 30px;">忍無可忍，無需再忍</p>
-        <input type="text" id="nicknameInput" placeholder="取個響亮的代號 (Ex: 內湖金城武)">
-        <button class="btn" onclick="login()">🚀 進入修羅場</button>
+        <h1>CL 離職集點趣</h1>
+        <p style="color:#888">30 次的勇氣，換一次自由</p>
+        <input type="text" id="nicknameInput" placeholder="輸入暱稱">
+        <button class="btn" onclick="login()">開始</button>
+        <div style="margin-top:20px; font-size:0.8rem; color:#ccc;" onclick="toggleDebug()">連點這裡開啟除錯模式</div>
     </div>
 
     <header>
-        <h1>CL 離職集點趣 🧗</h1>
+        <h1>CL 離職集點趣 🚀</h1>
     </header>
 
     <div class="tabs">
-        <div class="tab active" onclick="switchTab('card', this)">🎫 我的集點</div>
-        <div class="tab" onclick="switchTab('list', this)">📣 大家的心聲</div>
+        <div class="tab active" onclick="switchTab('card', this)">集點卡</div>
+        <div class="tab" onclick="switchTab('list', this)">心聲牆</div>
     </div>
 
     <div class="user-info">
-        <span>Hi, <span id="displayNickname" style="font-weight:bold; color:var(--primary-red);">...</span></span>
-        <a class="logout-link" onclick="logout()">登出</a>
+        <span id="displayNickname">...</span>
+        <a style="color:var(--primary-red); cursor:pointer;" onclick="logout()">登出</a>
     </div>
 
     <div id="cardView" class="card-view">
         <div class="loyalty-card">
-            <div class="card-header">
-                <span style="color:#888; font-size:0.9rem;">累積怨氣值</span>
-                <span class="points-display"><span id="stampCount">0</span><span style="font-size:1rem; color:#aaa;"> / 12</span></span>
+            <div class="points-header">
+                <span class="points-number" id="stampCount">0</span>
+                <span style="color:#999; font-size:1.2rem;">/ 30</span>
             </div>
             <div class="stamp-grid" id="grid"></div>
         </div>
-        <p style="color:#999; font-size:0.85rem; text-align:center;">💡 點擊閃爍的格子來記錄你的崩潰瞬間</p>
         
-        <div id="errorMsg" class="error-box">
-            ⚠️ <b>讀取失敗</b><br>
-            請確認 Google Sheet 工作表名稱是否為 <b>records</b>，<br>
-            且 Apps Script 權限已設為「任何人」。
-        </div>
+        <div id="debugArea">Waiting for data...</div>
     </div>
 
     <div id="listView" class="list-view">
-        <div id="recordList" style="text-align: center; padding: 40px; color: #999;">
-            <div style="font-size: 2rem; margin-bottom: 10px;">⏳</div>
-            讀取大家的心聲中...
-        </div>
+        <div id="recordList">載入中...</div>
     </div>
 </div>
 
 <div class="modal" id="reasonModal">
     <div class="modal-content">
-        <h2 style="margin-top:0;">💭 萌生退意...</h2>
-        <p style="color:#666; font-size:0.95rem;">這次是因為什麼事呢？<br>(理由會匿名顯示在公佈欄)</p>
-        <textarea id="reasonText" placeholder="Ex: 隔壁同事講電話太大聲..."></textarea>
-        <button id="confirmBtn" class="btn" onclick="submitReason()">💢 蓋下確認章</button>
-        <button style="background:transparent; color:#999; margin-top:15px; font-size:0.9rem; border:none; cursor:pointer;" onclick="closeModal()">算了，再忍忍</button>
+        <h3>😤 記錄原因</h3>
+        <textarea id="reasonText" placeholder="這次又是因為什麼？"></textarea>
+        <button id="confirmBtn" class="btn" onclick="submitReason()">蓋章！</button>
+        <button style="margin-top:10px; background:none; border:none; color:#999;" onclick="closeModal()">取消</button>
     </div>
 </div>
 
 <script>
     // ==========================================
-    // 你的新網址 (已更新)
+    // 請填入你「重新部署」後的網址
     // ==========================================
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyYNsTAehnOHJV3T3V3XaoqH0hPL6TN9oCkWuu1vNXWa2dqYasqQ67ZxfVvIP7H6jy2Zg/exec"; 
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxQsuVw2L49zf5pIJKoPCarGP5kcax3T79PvCsTTB3xG0LxwEcfqZQClpwXvS2-gTWYPw/exec"; 
 
     let currentUser = "";
-    let localStampCount = 0; 
+    let localStampCount = 0;
     let userIP = "Unknown";
-
     const grid = document.getElementById('grid');
     const modal = document.getElementById('reasonModal');
+    const debugArea = document.getElementById('debugArea');
 
-    function init() {
-        initGrid();
-        
-        // 自動登入
-        const savedName = localStorage.getItem('cl_nickname');
-        if(savedName) {
-            currentUser = savedName;
-            document.getElementById('displayNickname').innerText = currentUser;
-            document.getElementById('loginScreen').style.display = 'none';
-            fetchData();
-        }
+    function log(msg) {
+        console.log(msg);
+        debugArea.innerHTML += "<div>> " + msg + "</div>";
+    }
 
-        // 偷偷抓 IP
-        fetch('https://api.ipify.org?format=json')
-            .then(res => res.json())
-            .then(data => { userIP = data.ip; })
-            .catch(() => {});
+    function toggleDebug() {
+        debugArea.style.display = debugArea.style.display === 'block' ? 'none' : 'block';
     }
 
     function initGrid() {
         grid.innerHTML = '';
-        for(let i=0; i<12; i++) {
+        // 產生 30 格
+        for(let i=0; i<30; i++) {
             let slot = document.createElement('div');
             slot.className = 'stamp-slot';
+            slot.innerHTML = `<span>${i+1}</span>`; // 顯示數字
             slot.dataset.idx = i;
             grid.appendChild(slot);
         }
+        // 初始化時，強制讓第一格變成可點擊狀態，防止無法操作
+        updateGrid(0);
+    }
+
+    function init() {
+        initGrid();
+        const savedName = localStorage.getItem('cl_nickname');
+        if(savedName) {
+            currentUser = savedName;
+            document.getElementById('nicknameInput').value = savedName;
+            login();
+        }
+        
+        // 抓 IP
+        fetch('https://api.ipify.org?format=json')
+            .then(res => res.json())
+            .then(data => userIP = data.ip)
+            .catch(err => log("IP Error: " + err));
     }
 
     function login() {
         const input = document.getElementById('nicknameInput').value.trim();
-        if(!input) return alert("請輸入一個代號！");
+        if(!input) return alert("請輸入暱稱");
         
         currentUser = input;
         localStorage.setItem('cl_nickname', currentUser);
-        
         document.getElementById('displayNickname').innerText = currentUser;
         document.getElementById('loginScreen').style.display = 'none';
         
+        log("Logging in as: " + currentUser);
         fetchData();
     }
 
     function logout() {
-        if(confirm("確定要登出嗎？")) {
-            localStorage.removeItem('cl_nickname');
-            location.reload(); 
-        }
+        localStorage.removeItem('cl_nickname');
+        location.reload();
     }
 
-    function switchTab(viewName, tabElement) {
+    function switchTab(view, tab) {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        tabElement.classList.add('active');
-
-        if(viewName === 'card') {
-            document.getElementById('cardView').style.display = 'flex';
-            document.getElementById('listView').style.display = 'none';
-        } else {
-            document.getElementById('cardView').style.display = 'none';
-            document.getElementById('listView').style.display = 'block';
-            // 切換到列表時，強制刷新資料
-            fetchData();
-        }
+        tab.classList.add('active');
+        document.getElementById('cardView').style.display = view === 'card' ? 'flex' : 'none';
+        document.getElementById('listView').style.display = view === 'list' ? 'block' : 'none';
+        if(view === 'list') fetchData();
     }
 
     function openModal() {
@@ -409,84 +279,69 @@
 
     function submitReason() {
         const reason = document.getElementById('reasonText').value;
-        if(!reason) return alert("請寫下原因，宣洩一下！");
+        if(!reason) return alert("請寫下原因");
 
         const btn = document.getElementById('confirmBtn');
-        btn.innerText = "蓋章中...";
         btn.disabled = true;
+        btn.innerText = "傳送中...";
 
-        // 前端先更新 (樂觀更新)
-        localStampCount++; 
-        updateGrid(localStampCount); 
+        // 樂觀更新
+        localStampCount++;
+        updateGrid(localStampCount);
+
+        const payload = { nickname: currentUser, reason: reason, ip: userIP };
+        log("Sending: " + JSON.stringify(payload));
 
         fetch(SCRIPT_URL, {
             method: 'POST',
-            body: JSON.stringify({ 
-                nickname: currentUser, 
-                reason: reason,
-                ip: userIP 
-            }),
-            mode: 'no-cors' 
+            body: JSON.stringify(payload),
+            mode: 'no-cors'
         }).then(() => {
+            log("Submit Success");
             closeModal();
             document.getElementById('reasonText').value = '';
-            btn.innerText = "💢 蓋下確認章";
             btn.disabled = false;
-            // 延遲同步
-            setTimeout(fetchData, 2000); 
+            btn.innerText = "蓋章！";
+            setTimeout(fetchData, 1500);
         }).catch(err => {
-            alert("網路不穩，但章先幫你蓋好了！");
+            log("Submit Error: " + err);
+            alert("連線錯誤，請查看下方除錯區");
             btn.disabled = false;
         });
     }
 
     function fetchData() {
-        document.getElementById('errorMsg').style.display = 'none';
+        log("Fetching data...");
+        const url = SCRIPT_URL + "?t=" + new Date().getTime();
         
-        // 加上時間參數防快取
-        const antiCacheURL = SCRIPT_URL + "?t=" + new Date().getTime();
-
-        fetch(antiCacheURL)
+        fetch(url)
         .then(res => res.json())
         .then(data => {
-            // 1. 處理個人集點
-            const myRecords = data.filter(d => d.nickname.trim() === currentUser.trim());
-            const serverCount = myRecords.length;
-
-            if (serverCount > localStampCount) {
-                localStampCount = serverCount;
-            }
-            updateGrid(localStampCount);
-
-            // 2. 處理列表
+            log("Data received: " + data.length + " records");
+            
+            // 更新列表
             const listDiv = document.getElementById('recordList');
             listDiv.innerHTML = '';
-            
-            if (data.length === 0) {
-                listDiv.innerHTML = '<div style="text-align:center; color:#999; padding:20px;">目前一片祥和 🕊️</div>';
-            } else {
-                data.forEach(item => {
-                    let div = document.createElement('div');
-                    div.className = 'record-item';
-                    
-                    let dateObj = new Date(item.time);
-                    let dateStr = `${dateObj.getMonth()+1}/${dateObj.getDate()} ${dateObj.getHours()}:${(dateObj.getMinutes()<10?'0':'')+dateObj.getMinutes()}`;
+            data.forEach(item => {
+                let div = document.createElement('div');
+                div.className = 'record-item';
+                div.innerHTML = `<div><b>${item.nickname}</b> <small>${new Date(item.time).toLocaleDateString()}</small></div><div style="color:#666">${item.reason}</div>`;
+                listDiv.appendChild(div);
+            });
 
-                    div.innerHTML = `
-                        <div class="record-info">
-                            <span class="record-name">👤 ${item.nickname}</span>
-                            <span>${dateStr}</span>
-                        </div>
-                        <div class="record-reason">${item.reason}</div>
-                    `;
-                    listDiv.appendChild(div);
-                });
-            }
+            // 更新個人集點
+            const myRecords = data.filter(d => d.nickname.trim() === currentUser.trim());
+            const serverCount = myRecords.length;
+            log("My Count: " + serverCount);
+
+            if(serverCount > localStampCount) localStampCount = serverCount;
+            updateGrid(localStampCount);
         })
         .catch(err => {
-            console.error("Fetch Error:", err);
-            document.getElementById('errorMsg').style.display = 'block';
-            document.getElementById('recordList').innerHTML = '<div style="text-align:center; color:#e74c3c;">讀取失敗 😱</div>';
+            log("Fetch Error: " + err);
+            // 這裡顯示紅字提醒
+            debugArea.style.display = 'block';
+            debugArea.innerHTML += "<div style='color:red'>⚠️ 讀取失敗，可能是權限問題。請確認 Apps Script 部署為「任何人」。</div>";
         });
     }
 
@@ -495,26 +350,20 @@
         const slots = document.querySelectorAll('.stamp-slot');
         
         slots.forEach((slot, index) => {
-            // 重置狀態
-            slot.className = 'stamp-slot'; 
+            slot.className = 'stamp-slot'; // 重置
             slot.onclick = null;
 
             if(index < count) {
-                // 已蓋章
                 slot.classList.add('stamped');
             } else if (index === count) {
-                // 下一個要蓋的
                 slot.classList.add('next-up');
-                slot.onclick = openModal;
-            } else {
-                // 未來還不能蓋的
-                slot.onclick = () => alert("別急，飯要一口一口吃，章要一個一個蓋！🥣");
+                slot.onclick = openModal; // 關鍵：確保這格可以點
             }
         });
     }
 
     init();
-
+    
     window.onclick = function(event) {
         if (event.target == modal) closeModal();
     }
