@@ -7,7 +7,7 @@
     <style>
         :root {
             --primary-red: #c00000;
-            --bg-color: #f4f4f4; /* 改成淺灰白 */
+            --bg-color: #f4f4f4;
             --card-bg: #ffffff;
             --text-main: #333333;
             --text-sub: #666666;
@@ -34,7 +34,6 @@
             flex-direction: column;
         }
 
-        /* 頂部導航 */
         header {
             background-color: #fff;
             padding: 20px;
@@ -44,7 +43,6 @@
 
         h1 { margin: 0; font-size: 1.4rem; color: var(--primary-red); letter-spacing: 1px; }
         
-        /* 頁籤切換 */
         .tabs {
             display: flex;
             background: #fff;
@@ -65,7 +63,6 @@
             font-weight: bold;
         }
 
-        /* 使用者狀態 */
         .user-info {
             padding: 10px 20px;
             background: #fafafa;
@@ -74,7 +71,6 @@
             color: var(--text-sub);
         }
 
-        /* 卡片區域 */
         .card-view {
             padding: 20px;
             flex: 1;
@@ -92,9 +88,9 @@
             box-shadow: 0 5px 15px rgba(192, 0, 0, 0.1);
             position: relative;
             margin-bottom: 20px;
+            box-sizing: border-box;
         }
 
-        /* 標題與進度 */
         .card-header {
             display: flex;
             justify-content: space-between;
@@ -109,7 +105,6 @@
             color: var(--primary-red);
         }
 
-        /* 集點格子 */
         .stamp-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -131,7 +126,6 @@
 
         .stamp-slot:active { transform: scale(0.95); }
 
-        /* 蓋章樣式 */
         .stamp-slot.stamped {
             border-color: var(--primary-red);
             background: #fffafa;
@@ -149,15 +143,8 @@
             align-items: center;
             justify-content: center;
             transform: rotate(-15deg);
-            animation: stampIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        @keyframes stampIn {
-            from { transform: scale(2) rotate(0deg); opacity: 0; }
-            to { transform: scale(1) rotate(-15deg); opacity: 1; }
-        }
-
-        /* 列表樣式 */
         .list-view { display: none; padding: 20px; width: 100%; box-sizing: border-box;}
         .record-item { 
             background: white; 
@@ -172,26 +159,20 @@
         .record-name { font-weight: bold; color: #333; }
         .record-reason { color: #444; font-size: 0.95rem; line-height: 1.5; }
 
-        /* 彈窗 */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; width: 85%; max-width: 320px; border-radius: 12px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
         textarea { width: 100%; height: 100px; margin: 15px 0; padding: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 1rem; resize: none; }
-        textarea:focus { outline: none; border-color: var(--primary-red); }
         
         .btn { background: var(--primary-red); color: white; border: none; padding: 12px 0; width: 100%; border-radius: 6px; font-size: 1rem; cursor: pointer; font-weight: bold; transition: 0.2s;}
-        .btn:hover { opacity: 0.9; }
         .btn:disabled { background: #ccc; cursor: not-allowed; }
 
-        /* 登入頁 */
         #loginScreen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 200; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; box-sizing: border-box; }
         input[type="text"] { width: 100%; padding: 15px; margin: 20px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; box-sizing: border-box; text-align: center;}
-
     </style>
 </head>
 <body>
 
 <div class="app-container">
-    
     <div id="loginScreen">
         <h1 style="font-size: 2rem; margin-bottom: 10px;">CL 離職集點趣</h1>
         <p style="color:#666; margin-bottom: 30px;">紀錄每一個想離開的瞬間</p>
@@ -240,27 +221,33 @@
 
 <script>
     // ==========================================
-    // 請確認你的網址前後不要有多餘的空白
+    // 請將這裡換成你剛剛「新增部署」後拿到的網址
     // ==========================================
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwIYdgz3RD8LTzqGkpt8-VJt92ccc9nWtD5ACnuNjLw5vzBR38aGH_z_UtXN8rudG5J8g/exec"; 
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzjfsXmPP5SBLeIYIsI9nmcpAwXErIH61g6XVRrl3g699IUNiIr4LJa8Q_Hd9G3ltPKoQ/exec"; 
 
     let currentUser = "";
-    let myStampCount = 0;
+    let localOptimisticCount = 0; // 本地樂觀計數 (防止章消失)
+    let userIP = "Fetching...";   // 儲存 IP 用
+
     const grid = document.getElementById('grid');
     const modal = document.getElementById('reasonModal');
 
-    // 初始化格子
     function initGrid() {
         grid.innerHTML = '';
         for(let i=0; i<12; i++) {
             let slot = document.createElement('div');
             slot.className = 'stamp-slot';
             slot.dataset.idx = i;
-            // 點擊事件由 updateGridState 統一管理
             grid.appendChild(slot);
         }
     }
     initGrid();
+
+    // 取得使用者 IP
+    fetch('https://api.ipify.org?format=json')
+        .then(response => response.json())
+        .then(data => { userIP = data.ip; })
+        .catch(err => { userIP = "Unknown"; });
 
     function login() {
         const input = document.getElementById('nicknameInput').value.trim();
@@ -270,7 +257,6 @@
         document.getElementById('displayNickname').innerText = currentUser;
         document.getElementById('loginScreen').style.display = 'none';
         
-        // 讀取資料
         fetchData();
     }
 
@@ -281,10 +267,12 @@
         if(viewName === 'card') {
             document.getElementById('cardView').style.display = 'flex';
             document.getElementById('listView').style.display = 'none';
+            // 切回來時也要更新，看看別人有沒有新的，但我們會保護自己的章
+            fetchData();
         } else {
             document.getElementById('cardView').style.display = 'none';
             document.getElementById('listView').style.display = 'block';
-            fetchData(); // 切換時更新
+            fetchData();
         }
     }
 
@@ -305,37 +293,31 @@
         btn.innerText = "蓋章中...";
         btn.disabled = true;
 
-        // 立刻在前端顯示蓋章成功 (使用者體驗優化)
-        // 假設伺服器會成功，先蓋章給使用者看
-        visualStampEffect();
+        // 1. 本地先加分 (防消失機制)
+        localOptimisticCount++; 
+        updateGrid(localOptimisticCount); 
 
+        // 2. 傳送資料到後端 (包含 IP)
         fetch(SCRIPT_URL, {
             method: 'POST',
-            body: JSON.stringify({ nickname: currentUser, reason: reason }),
+            body: JSON.stringify({ 
+                nickname: currentUser, 
+                reason: reason,
+                ip: userIP // 傳送 IP
+            }),
             mode: 'no-cors' 
         }).then(() => {
-            // 這裡不需要 alert 了，因為已經有視覺回饋
             closeModal();
             document.getElementById('reasonText').value = '';
             btn.innerText = "確認蓋章";
             btn.disabled = false;
             
-            // 背景默默更新資料庫
-            setTimeout(fetchData, 1000); 
+            // 稍後再更新一次確保同步
+            setTimeout(fetchData, 1500); 
         }).catch(err => {
-            alert("連線失敗，請檢查網路或是 Apps Script 網址");
+            alert("連線不穩，但你的章我們暫時記在心裡了！");
             btn.disabled = false;
         });
-    }
-
-    // 在前端先顯示蓋章效果
-    function visualStampEffect() {
-        const slots = document.querySelectorAll('.stamp-slot');
-        if (myStampCount < 12) {
-            slots[myStampCount].classList.add('stamped');
-            myStampCount++;
-            document.getElementById('stampCount').innerText = myStampCount;
-        }
     }
 
     function fetchData() {
@@ -346,27 +328,21 @@
             const listDiv = document.getElementById('recordList');
             listDiv.innerHTML = '';
             
-            // 更新我的點數
-            const myRecords = data.filter(d => d.nickname === currentUser);
-            myStampCount = myRecords.length;
-            document.getElementById('stampCount').innerText = myStampCount;
+            // 計算伺服器上的點數
+            const serverMyRecords = data.filter(d => d.nickname === currentUser);
+            const serverCount = serverMyRecords.length;
 
-            // 重新繪製格子狀態
-            const slots = document.querySelectorAll('.stamp-slot');
-            slots.forEach((slot, index) => {
-                if(index < myStampCount) {
-                    slot.classList.add('stamped');
-                    slot.onclick = null;
-                } else {
-                    slot.classList.remove('stamped');
-                    // 只有下一格可以按
-                    if (index === myStampCount) {
-                        slot.onclick = openModal;
-                    } else {
-                        slot.onclick = () => alert("請依序集點！");
-                    }
-                }
-            });
+            // 防消失邏輯：如果本地記的點數比伺服器多 (代表伺服器還沒存好)，就用本地的
+            // 這樣切換分頁時，章就不會消失了
+            const finalCount = Math.max(serverCount, localOptimisticCount);
+            
+            // 同步一下，以免下次 reload 跑掉
+            if (serverCount > localOptimisticCount) {
+                localOptimisticCount = serverCount;
+            }
+
+            // 更新格子
+            updateGrid(finalCount);
 
             // 繪製列表
             data.forEach(item => {
@@ -386,7 +362,26 @@
         .catch(err => console.error("讀取失敗:", err));
     }
 
-    // 點擊黑底關閉
+    // 獨立出來的更新格子函式
+    function updateGrid(count) {
+        document.getElementById('stampCount').innerText = count;
+        const slots = document.querySelectorAll('.stamp-slot');
+        
+        slots.forEach((slot, index) => {
+            if(index < count) {
+                slot.classList.add('stamped');
+                slot.onclick = null;
+            } else {
+                slot.classList.remove('stamped');
+                if (index === count) {
+                    slot.onclick = openModal;
+                } else {
+                    slot.onclick = () => alert("請依序集點！");
+                }
+            }
+        });
+    }
+
     window.onclick = function(event) {
         if (event.target == modal) {
             closeModal();
@@ -396,4 +391,3 @@
 
 </body>
 </html>
-
