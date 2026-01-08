@@ -7,33 +7,34 @@
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-red: #ff4d4f;
-            --primary-bg: #fff1f0;
+            --primary-red: #e74c3c;
+            --primary-bg: #fadbd8;
             --text-dark: #2c3e50;
-            --bg-dots: #f0f2f5;
+            --bg-dots: #f4f6f7;
         }
 
         body {
             background-color: var(--bg-dots);
-            background-image: radial-gradient(#d9d9d9 1.5px, transparent 1.5px);
-            background-size: 15px 15px;
+            background-image: radial-gradient(#d5d8dc 1.5px, transparent 1.5px);
+            background-size: 20px 20px;
             font-family: 'Noto Sans TC', sans-serif;
             margin: 0;
             display: flex;
             justify-content: center;
             min-height: 100vh;
             color: var(--text-dark);
-            padding-bottom: 50px; /* 給除錯區留空間 */
+            padding-bottom: 50px;
         }
 
         .app-container {
             width: 100%;
-            max-width: 450px; /* 稍微寬一點放30格 */
-            background: rgba(255,255,255,0.96);
+            max-width: 450px;
+            background: rgba(255,255,255,0.98);
             min-height: 100vh;
-            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
             display: flex;
             flex-direction: column;
+            position: relative;
         }
 
         header {
@@ -41,139 +42,179 @@
             padding: 20px;
             text-align: center;
             border-bottom: 3px solid var(--primary-red);
-            z-index: 2;
-        }
-
-        h1 { margin: 0; font-family: 'Fredoka', sans-serif; color: var(--primary-red); }
-
-        .tabs { display: flex; padding: 10px; gap: 10px; background: #fff; border-bottom: 1px solid #eee; }
-        .tab { flex: 1; padding: 12px; text-align: center; border-radius: 8px; background: #f5f5f5; cursor: pointer; font-weight: bold; color: #888; transition: 0.2s; }
-        .tab.active { background: var(--primary-red); color: white; }
-
-        .user-info { padding: 10px 20px; text-align: right; font-size: 0.85rem; color: #666; background: #fafafa; display: flex; justify-content: space-between; align-items: center;}
-        
-        .card-view { padding: 15px; flex: 1; display: flex; flex-direction: column; }
-
-        .loyalty-card {
-            background: white;
-            border-radius: 15px;
-            padding: 20px 15px;
-            border: 2px dashed #ffccc7;
+            z-index: 5;
             box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         }
 
-        .points-header { text-align: center; margin-bottom: 20px; }
-        .points-number { font-size: 2.5rem; font-family: 'Fredoka', sans-serif; color: var(--primary-red); font-weight: bold; }
+        h1 { margin: 0; font-family: 'Fredoka', sans-serif; color: var(--primary-red); font-size: 1.5rem; letter-spacing: 1px;}
 
-        /* 30格佈局：改成 5欄 */
+        /* 導航列 */
+        .tabs { display: flex; padding: 15px; gap: 15px; justify-content: center; }
+        .tab { 
+            flex: 1; padding: 10px; text-align: center; border-radius: 50px; 
+            background: #ecf0f1; cursor: pointer; font-weight: bold; color: #95a5a6; 
+            transition: 0.3s; font-size: 0.9rem;
+        }
+        .tab.active { background: var(--primary-red); color: white; box-shadow: 0 4px 10px rgba(231, 76, 60, 0.4); transform: translateY(-2px); }
+
+        /* Poor Guy 區塊 */
+        .user-info { 
+            padding: 10px 25px; 
+            text-align: right; 
+            font-size: 0.9rem; 
+            color: #7f8c8d; 
+            background: #fff;
+            display: flex; 
+            justify-content: flex-end; 
+            align-items: center; 
+            gap: 10px;
+            font-family: 'Fredoka', sans-serif;
+        }
+        
+        .card-view { padding: 20px; flex: 1; display: flex; flex-direction: column; align-items: center;}
+
+        .loyalty-card {
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            padding: 25px 15px;
+            border: 2px dashed #f1948a;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .points-header { text-align: center; margin-bottom: 25px; border-bottom: 2px dashed #f2f3f4; padding-bottom: 15px;}
+        .points-number { font-size: 3rem; font-family: 'Fredoka', sans-serif; color: var(--primary-red); font-weight: bold; text-shadow: 2px 2px 0px #fadbd8;}
+
+        /* 30格佈局：5欄 */
         .stamp-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr); /* 5欄 */
+            grid-template-columns: repeat(5, 1fr);
             gap: 10px;
         }
 
         .stamp-slot {
             aspect-ratio: 1;
-            border-radius: 50%;
+            border-radius: 12px;
             background: #fff;
-            border: 2px dashed #ddd;
+            border: 2px solid #ecf0f1;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 0.8rem;
-            color: #ccc;
+            color: #bdc3c7;
             position: relative;
-            cursor: pointer;
+            cursor: default;
             transition: 0.2s;
+            font-family: 'Fredoka', sans-serif;
         }
-
-        /* 數字標示 */
-        .stamp-slot span { font-size: 0.7rem; font-family: 'Fredoka'; opacity: 0.5; }
 
         /* 下一個可點擊 */
         .stamp-slot.next-up {
             border-color: var(--primary-red);
-            background: var(--primary-bg);
-            animation: pulse 1.5s infinite;
+            background: #fdfefe;
             cursor: pointer;
+            box-shadow: 0 0 10px rgba(231, 76, 60, 0.3);
+            animation: bounce 2s infinite;
         }
+        .stamp-slot.next-up::after { content: "👇"; font-size: 1.2rem; }
         .stamp-slot.next-up span { display: none; }
-        .stamp-slot.next-up::after { content: "➕"; font-size: 1.2rem; }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-5px);}
+            60% {transform: translateY(-3px);}
+        }
 
         /* 已蓋章 */
         .stamp-slot.stamped {
             border: 2px solid var(--primary-red);
-            background: #fff5f5;
+            background: #fdedec;
             color: transparent;
         }
         .stamp-slot.stamped span { display: none; }
         .stamp-slot.stamped::before {
-            content: "離"; /* 這裡可以改成 Emoji 如 💢 */
-            color: var(--primary-red);
-            font-weight: bold;
-            font-size: 1.2rem;
+            content: "💢"; 
+            font-size: 1.4rem;
             position: absolute;
-            transform: rotate(-15deg);
+            animation: stampIn 0.3s cubic-bezier(0.5, 1.5, 0.5, 1.5);
         }
-
-        @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.8; } }
+        
+        @keyframes stampIn { from { transform: scale(2); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
         /* 列表 */
-        .list-view { display: none; padding: 20px; }
-        .record-item { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid var(--primary-red); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-
-        /* 彈窗 */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 25px; width: 85%; max-width: 320px; border-radius: 15px; text-align: center; }
-        textarea { width: 100%; height: 80px; margin: 15px 0; padding: 10px; border: 2px solid #eee; border-radius: 8px; font-size: 1rem; }
-        
-        .btn { background: var(--primary-red); color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer; }
-        
-        /* 除錯區 */
-        #debugArea {
-            padding: 10px; background: #333; color: #0f0; font-family: monospace; font-size: 0.7rem;
-            word-break: break-all; margin-top: 20px; border-radius: 5px; display: none;
+        .list-view { display: none; padding: 20px; width: 100%; box-sizing: border-box;}
+        .record-item { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 15px; 
+            margin-bottom: 15px; 
+            border-left: 5px solid var(--primary-red); 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03); 
+            transition: 0.2s;
         }
+        .record-item:hover { transform: translateX(5px); }
 
-        #loginScreen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 200; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; box-sizing: border-box; }
-        input[type="text"] { width: 100%; padding: 15px; margin: 20px 0; border: 2px solid #ddd; border-radius: 12px; font-size: 1.1rem; text-align: center; }
+        /* 通用彈窗樣式 */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(2px); z-index: 9999; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 30px; width: 85%; max-width: 340px; border-radius: 20px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3); animation: slideUp 0.3s ease-out; }
+        
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        textarea { width: 100%; height: 100px; margin: 20px 0; padding: 15px; border: 2px solid #ecf0f1; border-radius: 10px; font-size: 1rem; font-family: inherit; background: #fdfefe; resize: none;}
+        textarea:focus { outline: none; border-color: var(--primary-red); background: white;}
+        
+        .btn { background: var(--primary-red); color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3); transition: 0.2s;}
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(231, 76, 60, 0.4); }
+        .btn-outline { background: transparent; border: 2px solid #bdc3c7; color: #7f8c8d; margin-top: 10px; box-shadow: none; }
+
+        /* 登入頁 */
+        #loginScreen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 200; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; box-sizing: border-box; background-image: radial-gradient(#d5d8dc 1.5px, transparent 1.5px); background-size: 20px 20px; }
+        input[type="text"] { width: 100%; padding: 15px; margin: 25px 0; border: 2px solid #ecf0f1; border-radius: 12px; font-size: 1.1rem; text-align: center; font-family: inherit; transition: 0.3s;}
+        input[type="text"]:focus { outline: none; border-color: var(--primary-red); transform: scale(1.02); }
+        
+        /* 錯誤訊息 */
+        #errorMsg { display: none; margin-top: 15px; padding: 10px; background: #fadbd8; color: #c0392b; border-radius: 8px; font-size: 0.85rem; border: 1px solid #f1948a; }
+
     </style>
 </head>
 <body>
 
 <div class="app-container">
     <div id="loginScreen">
-        <h1>CL 離職集點趣</h1>
-        <p style="color:#888">30 次的勇氣，換一次自由</p>
-        <input type="text" id="nicknameInput" placeholder="輸入暱稱">
-        <button class="btn" onclick="login()">開始</button>
-        <div style="margin-top:20px; font-size:0.8rem; color:#ccc;" onclick="toggleDebug()">連點這裡開啟除錯模式</div>
+        <div style="font-size: 3.5rem; margin-bottom: 10px; animation: float 3s infinite;">🫠</div>
+        <h1 style="font-size: 2rem; margin-bottom: 10px;">CL 離職集點趣</h1>
+        <p style="color:#7f8c8d">30 次的勇氣，換一次自由</p>
+        <input type="text" id="nicknameInput" placeholder="輸入代號 (Ex: 內湖金城武)">
+        <button class="btn" onclick="handleLoginClick()">進入修羅場 ⚡</button>
     </div>
 
     <header>
-        <h1>CL 離職集點趣 🚀</h1>
+        <h1>CL 離職集點趣 🧗</h1>
     </header>
 
     <div class="tabs">
-        <div class="tab active" onclick="switchTab('card', this)">集點卡</div>
-        <div class="tab" onclick="switchTab('list', this)">心聲牆</div>
+        <div class="tab active" onclick="switchTab('card', this)">🎫 集點卡</div>
+        <div class="tab" onclick="switchTab('list', this)">📢 心聲牆</div>
     </div>
 
     <div class="user-info">
-        <span id="displayNickname">...</span>
-        <a style="color:var(--primary-red); cursor:pointer;" onclick="logout()">登出</a>
+        <span>Poor guy: <span id="displayNickname" style="font-weight:bold; color:var(--primary-red);">...</span></span>
+        <a style="cursor:pointer; text-decoration:underline; font-size:0.8rem; margin-left:5px;" onclick="logout()">(登出)</a>
     </div>
 
     <div id="cardView" class="card-view">
         <div class="loyalty-card">
             <div class="points-header">
                 <span class="points-number" id="stampCount">0</span>
-                <span style="color:#999; font-size:1.2rem;">/ 30</span>
+                <span style="color:#bdc3c7; font-size:1.5rem; font-family:'Fredoka'"> / 30</span>
             </div>
             <div class="stamp-grid" id="grid"></div>
         </div>
+        <p style="color:#95a5a6; font-size:0.85rem; margin-top:20px;">💡 點擊閃爍的格子來記錄你的崩潰瞬間</p>
         
-        <div id="debugArea">Waiting for data...</div>
+        <div id="errorMsg"></div>
     </div>
 
     <div id="listView" class="list-view">
@@ -181,18 +222,30 @@
     </div>
 </div>
 
+<div class="modal" id="welcomeModal">
+    <div class="modal-content">
+        <div style="font-size: 3rem; margin-bottom: 15px;">🫂</div>
+        <h2 style="color:var(--text-dark); margin:0 0 10px 0;">辛苦了...</h2>
+        <p style="color:#7f8c8d; line-height: 1.6;">
+            雖然不想在這裡見到你，<br>但既然來了，就好好發洩一下吧。<br>
+            <small style="color:#bdc3c7;">(深呼吸...)</small>
+        </p>
+        <button class="btn" onclick="closeWelcome()">我準備好了 🤧</button>
+    </div>
+</div>
+
 <div class="modal" id="reasonModal">
     <div class="modal-content">
-        <h3>😤 記錄原因</h3>
-        <textarea id="reasonText" placeholder="這次又是因為什麼？"></textarea>
-        <button id="confirmBtn" class="btn" onclick="submitReason()">蓋章！</button>
-        <button style="margin-top:10px; background:none; border:none; color:#999;" onclick="closeModal()">取消</button>
+        <h3 style="margin:0; color:var(--primary-red)">😤 記錄原因</h3>
+        <textarea id="reasonText" placeholder="這次又是因為什麼？(老闆太雷？需求又改？)"></textarea>
+        <button id="confirmBtn" class="btn" onclick="submitReason()">💢 蓋下去！</button>
+        <button class="btn btn-outline" onclick="closeModal()">算了，再忍忍</button>
     </div>
 </div>
 
 <script>
     // ==========================================
-    // 請填入你「重新部署」後的網址
+    // 你的 Apps Script 網址
     // ==========================================
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxQsuVw2L49zf5pIJKoPCarGP5kcax3T79PvCsTTB3xG0LxwEcfqZQClpwXvS2-gTWYPw/exec"; 
 
@@ -200,59 +253,67 @@
     let localStampCount = 0;
     let userIP = "Unknown";
     const grid = document.getElementById('grid');
-    const modal = document.getElementById('reasonModal');
-    const debugArea = document.getElementById('debugArea');
+    const welcomeModal = document.getElementById('welcomeModal');
+    const reasonModal = document.getElementById('reasonModal');
+    const errorMsg = document.getElementById('errorMsg');
 
-    function log(msg) {
-        console.log(msg);
-        debugArea.innerHTML += "<div>> " + msg + "</div>";
-    }
-
-    function toggleDebug() {
-        debugArea.style.display = debugArea.style.display === 'block' ? 'none' : 'block';
-    }
-
+    // 初始化 30 格
     function initGrid() {
         grid.innerHTML = '';
-        // 產生 30 格
         for(let i=0; i<30; i++) {
             let slot = document.createElement('div');
             slot.className = 'stamp-slot';
-            slot.innerHTML = `<span>${i+1}</span>`; // 顯示數字
+            slot.innerHTML = `<span>${i+1}</span>`; 
             slot.dataset.idx = i;
             grid.appendChild(slot);
         }
-        // 初始化時，強制讓第一格變成可點擊狀態，防止無法操作
+        // 預設第0格可點 (防卡死)
         updateGrid(0);
     }
 
     function init() {
         initGrid();
+        
+        // 檢查是否有儲存的暱稱
         const savedName = localStorage.getItem('cl_nickname');
         if(savedName) {
             currentUser = savedName;
             document.getElementById('nicknameInput').value = savedName;
-            login();
+            
+            // 如果已經登入過，直接進主畫面，不需要再跳安慰視窗(或是你希望每次都跳也可以)
+            // 這裡設定為：只要重新整理，就當作剛進來，跳安慰視窗
+            showWelcomeFlow();
         }
-        
-        // 抓 IP
+
         fetch('https://api.ipify.org?format=json')
             .then(res => res.json())
             .then(data => userIP = data.ip)
-            .catch(err => log("IP Error: " + err));
+            .catch(() => {});
     }
 
-    function login() {
+    // 處理登入點擊
+    function handleLoginClick() {
         const input = document.getElementById('nicknameInput').value.trim();
         if(!input) return alert("請輸入暱稱");
         
         currentUser = input;
         localStorage.setItem('cl_nickname', currentUser);
-        document.getElementById('displayNickname').innerText = currentUser;
+        showWelcomeFlow();
+    }
+
+    // 顯示安慰流程
+    function showWelcomeFlow() {
         document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('displayNickname').innerText = currentUser;
         
-        log("Logging in as: " + currentUser);
-        fetchData();
+        // 彈出安慰視窗
+        welcomeModal.style.display = 'flex';
+    }
+
+    // 關閉安慰視窗，正式載入資料
+    function closeWelcome() {
+        welcomeModal.style.display = 'none';
+        fetchData(); // 這時候才去抓資料
     }
 
     function logout() {
@@ -269,12 +330,12 @@
     }
 
     function openModal() {
-        modal.style.display = 'flex';
+        reasonModal.style.display = 'flex';
         setTimeout(() => document.getElementById('reasonText').focus(), 100);
     }
 
     function closeModal() {
-        modal.style.display = 'none';
+        reasonModal.style.display = 'none';
     }
 
     function submitReason() {
@@ -285,63 +346,71 @@
         btn.disabled = true;
         btn.innerText = "傳送中...";
 
-        // 樂觀更新
         localStampCount++;
         updateGrid(localStampCount);
 
-        const payload = { nickname: currentUser, reason: reason, ip: userIP };
-        log("Sending: " + JSON.stringify(payload));
-
         fetch(SCRIPT_URL, {
             method: 'POST',
-            body: JSON.stringify(payload),
+            body: JSON.stringify({ nickname: currentUser, reason: reason, ip: userIP }),
             mode: 'no-cors'
         }).then(() => {
-            log("Submit Success");
             closeModal();
             document.getElementById('reasonText').value = '';
             btn.disabled = false;
-            btn.innerText = "蓋章！";
+            btn.innerText = "💢 蓋下去！";
             setTimeout(fetchData, 1500);
         }).catch(err => {
-            log("Submit Error: " + err);
-            alert("連線錯誤，請查看下方除錯區");
+            alert("網路錯誤，但章先蓋好了");
             btn.disabled = false;
         });
     }
 
     function fetchData() {
-        log("Fetching data...");
+        // 隱藏之前的錯誤
+        errorMsg.style.display = 'none';
+        
         const url = SCRIPT_URL + "?t=" + new Date().getTime();
         
         fetch(url)
         .then(res => res.json())
         .then(data => {
-            log("Data received: " + data.length + " records");
-            
-            // 更新列表
+            // 1. 更新心聲牆
             const listDiv = document.getElementById('recordList');
             listDiv.innerHTML = '';
+            if(data.length === 0) listDiv.innerHTML = '<div style="text-align:center; color:#bdc3c7;">目前還沒有人離職...不可思議</div>';
+            
             data.forEach(item => {
                 let div = document.createElement('div');
                 div.className = 'record-item';
-                div.innerHTML = `<div><b>${item.nickname}</b> <small>${new Date(item.time).toLocaleDateString()}</small></div><div style="color:#666">${item.reason}</div>`;
+                let d = new Date(item.time);
+                let dateStr = `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${(d.getMinutes()<10?'0':'')+d.getMinutes()}`;
+                
+                div.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; margin-bottom:5px; color:#95a5a6; font-size:0.85rem;">
+                        <b>${item.nickname}</b> <span>${dateStr}</span>
+                    </div>
+                    <div style="color:#34495e;">${item.reason}</div>
+                `;
                 listDiv.appendChild(div);
             });
 
-            // 更新個人集點
-            const myRecords = data.filter(d => d.nickname.trim() === currentUser.trim());
+            // 2. 更新集點卡 (關鍵修復：強制轉成字串並去除空白)
+            // 這裡使用了 String(...) 和 .trim() 來確保比對 100% 正確
+            const myNameClean = String(currentUser).trim();
+            const myRecords = data.filter(d => String(d.nickname).trim() === myNameClean);
             const serverCount = myRecords.length;
-            log("My Count: " + serverCount);
+
+            console.log("My Name:", myNameClean, "Count:", serverCount); // 除錯用
 
             if(serverCount > localStampCount) localStampCount = serverCount;
             updateGrid(localStampCount);
         })
         .catch(err => {
-            log("Fetch Error: " + err);
-            // 這裡顯示紅字提醒
-            debugArea.style.display = 'block';
-            debugArea.innerHTML += "<div style='color:red'>⚠️ 讀取失敗，可能是權限問題。請確認 Apps Script 部署為「任何人」。</div>";
+            console.error(err);
+            // 只有當心聲牆也掛掉時，才顯示這個嚴重錯誤
+            // 既然心聲牆會好，這裡通常不會執行到
+            errorMsg.style.display = 'block';
+            errorMsg.innerHTML = "⚠️ 讀取不順，請檢查網路或稍後再試。";
         });
     }
 
@@ -357,17 +426,25 @@
                 slot.classList.add('stamped');
             } else if (index === count) {
                 slot.classList.add('next-up');
-                slot.onclick = openModal; // 關鍵：確保這格可以點
+                slot.onclick = openModal;
             }
         });
     }
 
+    // 啟動
     init();
     
+    // 點擊背景關閉
     window.onclick = function(event) {
-        if (event.target == modal) closeModal();
+        if (event.target == reasonModal) closeModal();
     }
 </script>
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
 
 </body>
 </html>
